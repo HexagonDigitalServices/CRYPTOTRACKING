@@ -1,8 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import Chart from 'react-google-charts';
+import React, { useEffect, useState } from 'react'
+import Chart from 'react-google-charts'
 
-const AreaChartComponent = ({ historicalData, currencySymbol }) => {
-    const [data, setData] = useState([["Date", "Prices"]]);
+const AreaChart = ({ historicalData, currencySymbol }) => {
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+        if (historicalData?.prices) {
+            const formattedData = historicalData.prices.map(item => [
+                new Date(item[0]),
+                item[1]
+            ]);
+            setData([['Date', 'Price'], ...formattedData]);
+        }
+    }, [historicalData])
 
     const options = {
         backgroundColor: 'transparent',
@@ -52,8 +62,20 @@ const AreaChartComponent = ({ historicalData, currencySymbol }) => {
     };
 
     return (
-        
-    );
-};
+        <div className="w-full bg-gray-800/20 backdrop-blur-sm rounded-xl p-4 border border-emerald-500/20">
+            {data ? (
+                <Chart
+                    chartType="AreaChart"
+                    data={data}
+                    options={options}
+                    loader={<div className="text-emerald-400">Loading Market Data...</div>}
+                    rootProps={{ 'data-testid': '1' }}
+                />
+            ) : (
+                <div className="text-emerald-400">Loading Market Data...</div>
+            )}
+        </div>
+    )
+}
 
-export default AreaChartComponent;
+export default AreaChart
